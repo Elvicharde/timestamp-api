@@ -25,31 +25,35 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-
 // endpoint for posting date 
 app.get("/api/:date/", Handler).post("/api/:date/", Handler);
 
 //endpoint for handling no input as well
 app.get("/api", Handler2).post("/api", Handler2);
 
-function Handler(req, res){
+function Handler(req, res) {
   let date = req.params.date;
 
   // for non empty dates
-  if (!/-/.test(date)){
-    date = +date    // converting to integer if date is in unix timestamp format
+  if (!/-/.test(date)) {
+    // handling spaces in string inputs
+    if (/\s/.test(date)){
+      ""
+    } else{
+      date = +date    // converting to integer if date is in unix timestamp format
+    }    
   }
-  let utcDate = new Date(date)
+  
+  let utcDate = new Date(date);
 
-
-// Date validation: invalid date
-  if (isNaN(utcDate.valueOf())){
-    return res.json({ error : "Invalid Date" })
+  // Date validation: invalid date
+  if (isNaN(utcDate.valueOf())) {
+    return res.json({ error: "Invalid Date" })
   }
 
-// Otherwise
+  // Otherwise
   let unixTime = Date.parse(utcDate);
-  let respObj = {"unix":+`${unixTime}`, "utc":`${utcDate.toUTCString()}`}
+  let respObj = { "unix": +`${unixTime}`, "utc": `${utcDate.toUTCString()}` }
   res.json(respObj);
 };
 
